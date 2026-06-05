@@ -1,7 +1,0 @@
-# Konfigurasi Server Web Caddy untuk Laravel di Railway
-:$PORT {
-    root * public
-    encode gzip
-    php_fastcgi 127.0.0.1:9000
-    file_server
-}
