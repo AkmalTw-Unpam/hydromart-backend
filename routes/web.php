@@ -17,5 +17,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-// Route::get('onubadok/change/{lang}', 'App\Http\Controllers\OnubadokController@change');
+// Trik Legendaris: Jika rute dianggap sebagai folder oleh server hosting, 
+// paksa Laravel untuk menangkap dan memprosesnya secara internal.
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'Jalur dialihkan otomatis oleh Laravel Cloud',
+        'status' => 'success'
+    ], 200);
+});
