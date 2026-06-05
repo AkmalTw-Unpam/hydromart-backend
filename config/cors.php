@@ -6,13 +6,14 @@ return [
 
     'allowed_methods' => ['*'],
 
-    // JALUR AMAN: Kita buka untuk kedua alamat agar Anda bebas pakai localhost atau 127.0.0.1
+    // JALUR AMAN: Masukkan localhost DAN link domain Vercel Anda di sini
     'allowed_origins' => [
         'http://localhost:5173',
         'http://127.0.0.1:5173',
+        'https://hydromart-frontend.vercel.app', // <-- Pindahkan ke sini
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [], // <-- Kosongkan saja jika bukan regex
 
     'allowed_headers' => ['*'],
 
