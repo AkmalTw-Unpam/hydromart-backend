@@ -46,7 +46,7 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --force"
         ],
-        "start": "php -S 0.0.0.0:$PORT -t public"
+        "start": "php artisan serve --host=0.0.0.0 --port=$PORT"
     
     },
     "extra": {
