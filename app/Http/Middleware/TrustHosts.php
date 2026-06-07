@@ -14,7 +14,10 @@ class TrustHosts extends Middleware
     public function hosts(): array
     {
         return [
-            $this->allSubdomainsOfApplicationUrl(),
+            'hydromart-backend-production\.up\.railway\.app',
+            'hydromart-frontend\.vercel\.app',
+            'localhost',
+            '127\.0\.0\.1',
         ];
     }
 }
