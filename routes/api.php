@@ -15,6 +15,19 @@ use App\Http\Controllers\Api\{
 
 /*
 |--------------------------------------------------------------------------
+| HANDLE CORS PREFLIGHT
+|--------------------------------------------------------------------------
+*/
+
+Route::options('/{any}', function () {
+    return response('', 200)
+        ->header('Access-Control-Allow-Origin', 'https://hydromart-frontend.vercel.app')
+        ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+})->where('any', '.*');
+
+/*
+|--------------------------------------------------------------------------
 | PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
