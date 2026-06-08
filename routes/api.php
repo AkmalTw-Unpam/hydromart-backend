@@ -15,16 +15,15 @@ use App\Http\Controllers\Api\{
 
 /*
 |--------------------------------------------------------------------------
-| HANDLE CORS PREFLIGHT
+| TEST ROUTE
 |--------------------------------------------------------------------------
 */
 
-Route::options('/{any}', function () {
-    return response('', 200)
-        ->header('Access-Control-Allow-Origin', 'https://hydromart-frontend.vercel.app')
-        ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-})->where('any', '.*');
+Route::get('/test', function () {
+    return response()->json([
+        'status' => 'ok'
+    ]);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -42,92 +41,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | AUTH
-    |--------------------------------------------------------------------------
-    */
-
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
-    Route::post('/profile', [AuthController::class, 'updateProfile']);
-    Route::post('/change-password', [AuthController::class, 'changePassword']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | DASHBOARD
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/dashboard', [DashboardController::class, 'index']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | ITEMS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/items', [ItemController::class, 'index']);
-    Route::post('/items', [ItemController::class, 'store']);
-    Route::get('/items/{item}', [ItemController::class, 'show']);
-    Route::post('/items/{item}', [ItemController::class, 'update']);
-    Route::delete('/items/{item}', [ItemController::class, 'destroy']);
-    Route::post('/items/{item}/adjust', [ItemController::class, 'adjust']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | CATEGORIES
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/categories', [CategoryController::class, 'index']);
-    Route::post('/categories', [CategoryController::class, 'store']);
-    Route::put('/categories/{category}', [CategoryController::class, 'update']);
-    Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | SUPPLIERS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/suppliers', [SupplierController::class, 'index']);
-    Route::post('/suppliers', [SupplierController::class, 'store']);
-    Route::get('/suppliers/{supplier}', [SupplierController::class, 'show']);
-    Route::put('/suppliers/{supplier}', [SupplierController::class, 'update']);
-    Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | TRANSACTIONS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/incoming', [TransactionController::class, 'incomingIndex']);
-    Route::post('/incoming', [TransactionController::class, 'incomingStore']);
-
-    Route::get('/outgoing', [TransactionController::class, 'outgoingIndex']);
-    Route::post('/outgoing', [TransactionController::class, 'outgoingStore']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | NOTIFICATIONS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/notifications', [NotificationController::class, 'index']);
-    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
-    Route::post('/notifications/read', [NotificationController::class, 'markRead']);
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | REPORTS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/reports/stock', [ReportController::class, 'stock']);
-    Route::get('/reports/incoming', [ReportController::class, 'incoming']);
-    Route::get('/reports/outgoing', [ReportController::class, 'outgoing']);
-    Route::get('/reports/movements', [ReportController::class, 'movements']);
 });
