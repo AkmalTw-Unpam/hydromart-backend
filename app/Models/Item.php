@@ -1,19 +1,26 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
+use Illuminate\Support\Facades\Storage;
 
 class Item extends Model {
     use SoftDeletes;
+
     protected $fillable = [
         'code','name','category_id','supplier_id','unit','stock',
         'min_stock','max_stock','price','location','image','barcode','description','is_active'
     ];
+
     protected $casts = [
         'stock' => 'decimal:2', 'min_stock' => 'decimal:2',
         'max_stock' => 'decimal:2', 'price' => 'decimal:2', 'is_active' => 'boolean'
     ];
-    protected $appends = ['status','image_url'];
+
+    // Menambahkan avatar_url ke appends bersama status dan image_url bawaanmu
+    protected $appends = ['status', 'image_url', 'avatar_url'];
 
     public function category(): BelongsTo { return $this->belongsTo(Category::class); }
     public function supplier(): BelongsTo { return $this->belongsTo(Supplier::class); }
@@ -27,10 +34,16 @@ class Item extends Model {
         return 'normal';
     }
 
+    // Menggunakan Storage::url() agar link mengarah ke domain Railway secara mutlak
     public function getImageUrlAttribute(): string {
         return $this->image
-            ? asset('storage/' . $this->image)
+            ? asset(Storage::url($this->image))
             : 'https://via.placeholder.com/100x100?text=' . urlencode($this->code);
+    }
+
+    // Menambahkan alias Accessor avatar_url agar klop dengan kebutuhan data frontend kamu
+    public function getAvatarUrlAttribute(): string {
+        return $this->getImageUrlAttribute();
     }
 
     public static function generateCode(string $categoryCode): string {
