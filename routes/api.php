@@ -80,10 +80,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/read', [NotificationController::class, 'markRead']);
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
 
-    // Reports
-    Route::get('/reports/stock', [ReportController::class, 'stockReport']);
-    Route::get('/reports/incoming', [ReportController::class, 'incomingReport']);
-    Route::get('/reports/outgoing', [ReportController::class, 'outgoingReport']);
-    Route::get('/reports/movements', [ReportController::class, 'movementReport']);
+
+    // Reports - SUDAH DISINKRONKAN DENGAN REPORT CONTROLLER
+    Route::get('/reports/stock', [ReportController::class, 'stock']);
+    Route::get('/reports/incoming', [ReportController::class, 'incoming']);
+    Route::get('/reports/outgoing', [ReportController::class, 'outgoing']);
+    Route::get('/reports/movements', [ReportController::class, 'movements']);
 
 });
