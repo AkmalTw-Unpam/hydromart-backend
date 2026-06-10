@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Carbon\Carbon;
 use Throwable;
 
@@ -75,6 +77,53 @@ class AuthController extends Controller
         ]);
     }
 
+    // 🌟 FUNGSI BARU: UPDATE INFORMASI PROFIL
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'name'  => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $user->update($data);
+
+        return response()->json([
+            'message' => 'Profil berhasil diperbarui',
+            'user'    => $this->userResource($user)
+        ]);
+    }
+
+    // 🌟 FUNGSI BARU: UBAH PASSWORD AMAN
+    public function changePassword(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'current_password' => 'required|string',
+            'password'         => ['required', 'string', 'confirmed', Password::min(8)],
+        ], [
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            'password.min'       => 'Password baru minimal harus 8 karakter.',
+        ]);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Password saat ini tidak sesuai.',
+                'errors'  => ['current_password' => ['Password saat ini salah.']]
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return response()->json([
+            'message' => 'Password berhasil diubah'
+        ]);
+    }
+
     private function userResource(User $user): array
     {
         $lastLogin = 'Belum pernah login';
@@ -96,8 +145,6 @@ class AuthController extends Controller
             'phone' => $user->phone ?? '-',
             'department' => $user->department ?? '-',
             'avatar_url' => $user->avatar_url ?? null,
-
-            // Mengambil role asli dari database dan memaksanya menjadi huruf kecil agar klop dengan frontend
             'role' => strtolower($user->role ?? 'admin'),
             'role_label' => $user->role_label ?? 'Administrator',
             'is_active' => true,
