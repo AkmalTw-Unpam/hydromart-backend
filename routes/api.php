@@ -68,11 +68,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/suppliers/{id}', [SupplierController::class, 'update']);
     Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
 
-    // Transactions (Barang Masuk & Keluar)
-    Route::get('/incoming', [TransactionController::class, 'incomingList']);
-    Route::post('/incoming', [TransactionController::class, 'incomingCreate']);
-    Route::get('/outgoing', [TransactionController::class, 'outgoingList']);
-    Route::post('/outgoing', [TransactionController::class, 'outgoingCreate']);
+    // Transactions (Barang Masuk & Keluar) - SUDAH DISINKRONKAN DENGAN CONTROLLER
+    Route::get('/incoming', [TransactionController::class, 'incomingIndex']);
+    Route::post('/incoming', [TransactionController::class, 'incomingStore']);
+    Route::get('/outgoing', [TransactionController::class, 'outgoingIndex']);
+    Route::post('/outgoing', [TransactionController::class, 'outgoingStore']);
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
