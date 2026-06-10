@@ -15,14 +15,12 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         try {
-
             $request->validate([
                 'email'    => 'required|email',
                 'password' => 'required|string',
             ]);
 
             if (!Auth::attempt($request->only('email', 'password'))) {
-
                 return response()->json([
                     'message' => 'Email atau password salah'
                 ], 401);
@@ -50,7 +48,6 @@ class AuthController extends Controller
             ]);
 
         } catch (Throwable $e) {
-
             return response()->json([
                 'status' => 'ERROR',
                 'error'  => $e->getMessage(),
@@ -83,39 +80,27 @@ class AuthController extends Controller
         $lastLogin = 'Belum pernah login';
 
         if (!empty($user->last_login_at)) {
-
             try {
                 $lastLogin = Carbon::parse(
                     $user->last_login_at
                 )->diffForHumans();
-
             } catch (\Exception $e) {
-
                 $lastLogin = (string) $user->last_login_at;
             }
         }
 
         return [
-
             'id' => $user->id ?? '-',
-
             'name' => $user->name ?? 'User',
-
             'email' => $user->email ?? '-',
-
             'phone' => $user->phone ?? '-',
-
             'department' => $user->department ?? '-',
-
             'avatar_url' => $user->avatar_url ?? null,
 
-            // DISAFEKAN DULU
-            'role' => 'Admin',
-
-            'role_label' => 'Administrator',
-
+            // Mengambil role asli dari database dan memaksanya menjadi huruf kecil agar klop dengan frontend
+            'role' => strtolower($user->role ?? 'admin'),
+            'role_label' => $user->role_label ?? 'Administrator',
             'is_active' => true,
-
             'last_login_at' => $lastLogin,
         ];
     }
