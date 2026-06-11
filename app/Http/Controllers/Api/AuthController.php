@@ -77,7 +77,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // 🌟 FUNGSI BARU: MENANGANI REGISTRASI DARI FRONTEND
+    // 🌟 FUNGSI REGISTRASI: SEKARANG SINKRON DENGAN DATABASE LIVE RAILWAY
     public function register(Request $request): JsonResponse
     {
         try {
@@ -91,7 +91,7 @@ class AuthController extends Controller
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'password' => Hash::make($request->password),
-                // 'role_id'     => 3, // Otomatis mendaftar sebagai Staff gudang
+                'role_id'  => 3, // 🌟 3 otomatis mendaftar sebagai Staff Gudang sesuai isi tabel roles kamu
             ]);
 
             return response()->json([
@@ -109,7 +109,7 @@ class AuthController extends Controller
         }
     }
 
-    // 🌟 FUNGSI BARU: UPDATE INFORMASI PROFIL
+    // 🌟 FUNGSI UPDATE INFORMASI PROFIL
     public function updateProfile(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -127,7 +127,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // 🌟 FUNGSI BARU: UBAH PASSWORD AMAN
+    // 🌟 FUNGSI UBAH PASSWORD AMAN
     public function changePassword(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -177,10 +177,9 @@ class AuthController extends Controller
             'phone'         => $user->phone ?? '-',
             'department'    => $user->department ?? '-',
             'avatar_url'    => $user->avatar_url ?? null,
-            // 🌟 PERBAIKAN DI SINI: Membaca teks nama role dari relasi table roles dengan aman
             'role'          => strtolower($user->role?->name ?? 'staff'), 
             'role_id'       => $user->role_id ?? 3,
-            'role_label'    => $user->role?->name ?? 'Staff Gudang',
+            'role_label'    => $user->role?->display_name ?? 'Staff Gudang', // 🌟 Membaca kolom display_name dari database Railway kamu
             'is_active'     => true,
             'last_login_at' => $lastLogin,
         ];
