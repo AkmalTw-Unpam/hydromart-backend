@@ -77,6 +77,38 @@ class AuthController extends Controller
         ]);
     }
 
+    // 🌟 FUNGSI BARU: MENANGANI REGISTRASI DARI FRONTEND
+    public function register(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'name'     => 'required|string|max:255',
+                'email'    => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:6',
+            ]);
+
+            $user = User::create([
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'password' => Hash::make($request->password),
+                'role'     => 'Staff', // Otomatis mendaftar sebagai Staff gudang
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Registrasi berhasil! Silakan login.',
+                'user'    => $this->userResource($user)
+            ], 201);
+
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Registrasi gagal.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
     // 🌟 FUNGSI BARU: UPDATE INFORMASI PROFIL
     public function updateProfile(Request $request): JsonResponse
     {
