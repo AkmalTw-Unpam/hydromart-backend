@@ -109,6 +109,41 @@ class AuthController extends Controller
         }
     }
 
+    // 🌟 FUNGSI BARU: RESET PASSWORD TANPA LINK EMAIL (UNTUK DEVELOPMENT)
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'email'    => 'required|string|email|exists:users,email',
+                'password' => 'required|string|min:6|confirmed',
+            ], [
+                'email.exists'       => 'Email tersebut tidak terdaftar di sistem kami.',
+                'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+                'password.min'       => 'Password baru minimal harus 6 karakter.',
+            ]);
+
+            // Cari user berdasarkan email
+            $user = User::where('email', $request->email)->first();
+
+            // Ganti password lama dengan yang baru
+            $user->update([
+                'password' => Hash::make($request->password)
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Password berhasil diubah! Silakan login kembali.',
+            ], 200);
+
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mereset password.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
     // 🌟 FUNGSI UPDATE INFORMASI PROFIL
     public function updateProfile(Request $request): JsonResponse
     {
