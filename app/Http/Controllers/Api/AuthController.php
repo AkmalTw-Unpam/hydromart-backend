@@ -91,7 +91,7 @@ class AuthController extends Controller
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'password' => Hash::make($request->password),
-                'role'     => 'Staff', // Otomatis mendaftar sebagai Staff gudang
+                'role_id'     => 3, // Otomatis mendaftar sebagai Staff gudang
             ]);
 
             return response()->json([
@@ -171,15 +171,17 @@ class AuthController extends Controller
         }
 
         return [
-            'id' => $user->id ?? '-',
-            'name' => $user->name ?? 'User',
-            'email' => $user->email ?? '-',
-            'phone' => $user->phone ?? '-',
-            'department' => $user->department ?? '-',
-            'avatar_url' => $user->avatar_url ?? null,
-            'role' => strtolower($user->role ?? 'admin'),
-            'role_label' => $user->role_label ?? 'Administrator',
-            'is_active' => true,
+            'id'            => $user->id ?? '-',
+            'name'          => $user->name ?? 'User',
+            'email'         => $user->email ?? '-',
+            'phone'         => $user->phone ?? '-',
+            'department'    => $user->department ?? '-',
+            'avatar_url'    => $user->avatar_url ?? null,
+            // 🌟 PERBAIKAN DI SINI: Membaca teks nama role dari relasi table roles dengan aman
+            'role'          => strtolower($user->role?->name ?? 'staff'), 
+            'role_id'       => $user->role_id ?? 3,
+            'role_label'    => $user->role?->name ?? 'Staff Gudang',
+            'is_active'     => true,
             'last_login_at' => $lastLogin,
         ];
     }
