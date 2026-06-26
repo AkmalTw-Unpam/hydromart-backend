@@ -11,7 +11,7 @@ class SupplierController extends Controller
     public function index(Request $request): JsonResponse
     {
         $q = Supplier::withCount('items')
-            // PERBAIKAN: Mengelompokkan parameter OR agar tidak merusak filter is_active
+            // Mengelompokkan parameter OR agar tidak merusak filter is_active
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function ($sub) use ($request) {
                     $sub->where('name', 'like', "%{$request->search}%")
@@ -48,8 +48,11 @@ class SupplierController extends Controller
         return response()->json($supplier->load(['items:id,name,code,stock,unit']));
     }
 
-    public function update(Request $request, Supplier $supplier): JsonResponse
+    // PERBAIKAN UTAMA: Mengubah instance parameter agar mendukung mutasi POST murni
+    public function update(Request $request, $id): JsonResponse
     {
+        $supplier = Supplier::findOrFail($id);
+
         $data = $request->validate([
             'name'           => 'sometimes|string|max:255',
             'contact_person' => 'nullable|string|max:100',
@@ -57,11 +60,11 @@ class SupplierController extends Controller
             'email'          => 'nullable|email|max:100',
             'address'        => 'nullable|string',
             'city'           => 'nullable|string|max:100',
-            'is_active'      => 'sometimes', // Dilonggarkan agar aman dari tipe string Axios/React
+            'is_active'      => 'sometimes', 
             'notes'          => 'nullable|string',
         ]);
 
-        // PERBAIKAN: Konversi string request "true"/"1" menjadi boolean asli sebelum update database
+        // Menangkap status is_active secara dinamis baik dari format string maupun boolean
         if ($request->has('is_active')) {
             $data['is_active'] = $request->boolean('is_active');
         }
@@ -70,8 +73,10 @@ class SupplierController extends Controller
         return response()->json($supplier->fresh());
     }
 
-    public function destroy(Supplier $supplier): JsonResponse
+    public function destroy($id): JsonResponse
     {
+        $supplier = Supplier::findOrFail($id);
+
         // KONTROL KEAMANAN: Tolak hapus jika supplier masih memiliki barang terikat di gudang
         if ($supplier->items()->exists()) {
             return response()->json([
