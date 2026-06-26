@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -10,9 +11,16 @@ class SupplierController extends Controller
     public function index(Request $request): JsonResponse
     {
         $q = Supplier::withCount('items')
-            ->when($request->search, fn($q) => $q->where('name','like',"%{$request->search}%")->orWhere('code','like',"%{$request->search}%"))
+            // PERBAIKAN: Mengelompokkan parameter OR agar tidak merusak filter is_active
+            ->when($request->search, function ($query) use ($request) {
+                $query->where(function ($sub) use ($request) {
+                    $sub->where('name', 'like', "%{$request->search}%")
+                        ->orWhere('code', 'like', "%{$request->search}%");
+                });
+            })
             ->when($request->is_active !== null, fn($q) => $q->where('is_active', $request->boolean('is_active')))
             ->orderBy('name');
+
         return response()->json($q->paginate($request->per_page ?? 15));
     }
 
@@ -49,19 +57,33 @@ class SupplierController extends Controller
             'email'          => 'nullable|email|max:100',
             'address'        => 'nullable|string',
             'city'           => 'nullable|string|max:100',
-            'is_active'      => 'sometimes|boolean',
+            'is_active'      => 'sometimes', // Dilonggarkan agar aman dari tipe string Axios/React
             'notes'          => 'nullable|string',
         ]);
+
+        // PERBAIKAN: Konversi string request "true"/"1" menjadi boolean asli sebelum update database
+        if ($request->has('is_active')) {
+            $data['is_active'] = $request->boolean('is_active');
+        }
+
         $supplier->update($data);
         return response()->json($supplier->fresh());
     }
 
     public function destroy(Supplier $supplier): JsonResponse
     {
+        // KONTROL KEAMANAN: Tolak hapus jika supplier masih memiliki barang terikat di gudang
         if ($supplier->items()->exists()) {
-            return response()->json(['message' => 'Supplier masih terhubung dengan barang.'], 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus! Supplier ini masih memiliki barang aktif yang terikat di gudang.'
+            ], 422);
         }
+
         $supplier->delete();
-        return response()->json(['message' => 'Supplier dihapus.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Supplier berhasil dihapus.'
+        ]);
     }
 }
