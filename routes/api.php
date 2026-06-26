@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Api\{
     AuthController,
     DashboardController,
@@ -15,17 +14,6 @@ use App\Http\Controllers\Api\{
 
 /*
 |--------------------------------------------------------------------------
-| TEST ROUTE
-|--------------------------------------------------------------------------
-*/
-Route::get('/test', function () {
-    return response()->json([
-        'status' => 'ok'
-    ]);
-});
-
-/*
-|--------------------------------------------------------------------------
 | PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
@@ -35,7 +23,7 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 /*
 |--------------------------------------------------------------------------
-| PROTECTED ROUTES (Wajib Login dengan Sanctum Token)
+| PROTECTED ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth:sanctum')->group(function () {
@@ -49,28 +37,28 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
-    // Items (Barang) - AMAN SINKRON BERGAMBAR
+    // Items
     Route::get('/items', [ItemController::class, 'index']);
     Route::post('/items', [ItemController::class, 'store']);
     Route::get('/items/{id}', [ItemController::class, 'show']);
-    Route::post('/items/{id}', [ItemController::class, 'update']); // POST + _method PUT untuk FormData upload gambar
+    Route::post('/items/{id}', [ItemController::class, 'update']);
     Route::delete('/items/{id}', [ItemController::class, 'destroy']);
     Route::post('/items/{id}/adjust', [ItemController::class, 'adjustStock']);
 
-    // Categories - DIUBAH KE POST AGAR AMAN JIKA ADA FILE/FORM DATA FUTURE PROOF
+    // Categories
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
-    Route::post('/categories/{id}', [CategoryController::class, 'update']); // Diubah ke POST
+    Route::post('/categories/{id}', [CategoryController::class, 'update']);
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
-    // Suppliers - DIUBAH KE POST AGAR SINKRON DENGAN LOGIKA EDIT MULTIPART
+    // Suppliers (Sinkron dengan SupplierController@update yang menerima Request + ID)
     Route::get('/suppliers', [SupplierController::class, 'index']);
     Route::post('/suppliers', [SupplierController::class, 'store']);
     Route::get('/suppliers/{id}', [SupplierController::class, 'show']);
-    Route::post('/suppliers/{id}', [SupplierController::class, 'update']); // Diubah ke POST
+    Route::post('/suppliers/{id}', [SupplierController::class, 'update']); 
     Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
 
-    // Transactions (Barang Masuk & Keluar)
+    // Transactions
     Route::get('/incoming', [TransactionController::class, 'incomingIndex']);
     Route::post('/incoming', [TransactionController::class, 'incomingStore']);
     Route::get('/outgoing', [TransactionController::class, 'outgoingIndex']);
@@ -87,20 +75,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reports/incoming', [ReportController::class, 'incoming']);
     Route::get('/reports/outgoing', [ReportController::class, 'outgoing']);
     Route::get('/reports/movements', [ReportController::class, 'movements']);
-
-});
-
-/*
-|--------------------------------------------------------------------------
-| ROUTE OTOMATIS BERSIHIN CACHE SERVER (Bypass Perubahan Jalur)
-|--------------------------------------------------------------------------
-*/
-Route::get('/clear-cached-routes-gudang', function () {
-    \Artisan::call('route:clear');
-    \Artisan::call('config:clear');
-    \Artisan::call('cache:clear');
-    return response()->json([
-        'status' => 'success',
-        'message' => 'Cache rute Railway berhasil dibersihkan total, Mal!'
-    ]);
 });
