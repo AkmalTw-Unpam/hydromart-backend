@@ -49,28 +49,28 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
-    // Items (Barang)
+    // Items (Barang) - AMAN SINKRON BERGAMBAR
     Route::get('/items', [ItemController::class, 'index']);
     Route::post('/items', [ItemController::class, 'store']);
     Route::get('/items/{id}', [ItemController::class, 'show']);
-    Route::post('/items/{id}', [ItemController::class, 'update']); // Menggunakan POST + _method PUT untuk FormData upload gambar
+    Route::post('/items/{id}', [ItemController::class, 'update']); // POST + _method PUT untuk FormData upload gambar
     Route::delete('/items/{id}', [ItemController::class, 'destroy']);
     Route::post('/items/{id}/adjust', [ItemController::class, 'adjustStock']);
 
-    // Categories
+    // Categories - DIUBAH KE POST AGAR AMAN JIKA ADA FILE/FORM DATA FUTURE PROOF
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
-    Route::put('/categories/{id}', [CategoryController::class, 'update']);
+    Route::post('/categories/{id}', [CategoryController::class, 'update']); // Diubah ke POST
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
-    // Suppliers
+    // Suppliers - DIUBAH KE POST AGAR SINKRON DENGAN LOGIKA EDIT MULTIPART
     Route::get('/suppliers', [SupplierController::class, 'index']);
     Route::post('/suppliers', [SupplierController::class, 'store']);
     Route::get('/suppliers/{id}', [SupplierController::class, 'show']);
-    Route::put('/suppliers/{id}', [SupplierController::class, 'update']);
+    Route::post('/suppliers/{id}', [SupplierController::class, 'update']); // Diubah ke POST
     Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
 
-    // Transactions (Barang Masuk & Keluar) - SUDAH DISINKRONKAN DENGAN CONTROLLER
+    // Transactions (Barang Masuk & Keluar)
     Route::get('/incoming', [TransactionController::class, 'incomingIndex']);
     Route::post('/incoming', [TransactionController::class, 'incomingStore']);
     Route::get('/outgoing', [TransactionController::class, 'outgoingIndex']);
@@ -82,8 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/read', [NotificationController::class, 'markRead']);
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
 
-
-    // Reports - SUDAH DISINKRONKAN DENGAN REPORT CONTROLLER
+    // Reports
     Route::get('/reports/stock', [ReportController::class, 'stock']);
     Route::get('/reports/incoming', [ReportController::class, 'incoming']);
     Route::get('/reports/outgoing', [ReportController::class, 'outgoing']);
