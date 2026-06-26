@@ -37,13 +37,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
-    // Items
-    Route::get('/items', [ItemController::class, 'index']);
-    Route::post('/items', [ItemController::class, 'store']);
-    Route::get('/items/{id}', [ItemController::class, 'show']);
-    Route::post('/items/{id}', [ItemController::class, 'update']);
-    Route::post('/items/{id}/delete', [ItemController::class, 'destroy']);
-    Route::post('/items/{id}/adjust', [ItemController::class, 'adjustStock']);
+// Items
+Route::get('/items', [ItemController::class, 'index']);
+Route::post('/items', [ItemController::class, 'store']);
+Route::get('/items/{id}', [ItemController::class, 'show']);
+Route::put('/items/{id}', [ItemController::class, 'update']);
+Route::delete('/items/{id}', [ItemController::class, 'destroy']);
+Route::post('/items/{id}/adjust', [ItemController::class, 'adjustStock']);
 
     // Categories
     Route::get('/categories', [CategoryController::class, 'index']);
