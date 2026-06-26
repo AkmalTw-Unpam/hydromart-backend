@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -106,7 +107,6 @@ class ItemController extends Controller
         return response()->json(['message' => 'Barang berhasil dihapus.']);
     }
 
-    // INI METHOD YANG DIPANGGIL ROUTE adjustStock
     public function adjustStock(Request $request, $id): JsonResponse
     {
         $item = Item::findOrFail($id);
