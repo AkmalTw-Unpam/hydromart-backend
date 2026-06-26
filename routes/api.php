@@ -89,3 +89,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reports/movements', [ReportController::class, 'movements']);
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| ROUTE OTOMATIS BERSIHIN CACHE SERVER (Bypass Perubahan Jalur)
+|--------------------------------------------------------------------------
+*/
+Route::get('/clear-cached-routes-gudang', function () {
+    \Artisan::call('route:clear');
+    \Artisan::call('config:clear');
+    \Artisan::call('cache:clear');
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Cache rute Railway berhasil dibersihkan total, Mal!'
+    ]);
+});
