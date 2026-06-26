@@ -73,7 +73,6 @@ class ItemController extends Controller
         return response()->json($item->load(['category', 'supplier', 'stockMovements' => fn($q) => $q->with('user:id,name')->limit(20)]));
     }
 
-    // PERBAIKAN EDIT: Mengubah parameter ke $id agar sinkron dengan rute rute /items/{id}
     public function update(Request $request, $id): JsonResponse
     {
         $item = Item::findOrFail($id);
@@ -83,6 +82,7 @@ class ItemController extends Controller
             'category_id' => 'sometimes|exists:categories,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'unit'        => 'sometimes|string|max:20',
+            'stock'       => 'nullable|numeric|min:0', // PERBAIKAN: Stok sekarang diizinkan masuk dan di-update lewat form edit
             'min_stock'   => 'nullable|numeric|min:0',
             'max_stock'   => 'nullable|numeric|min:0',
             'price'       => 'nullable|numeric|min:0',
@@ -101,12 +101,11 @@ class ItemController extends Controller
         return response()->json($item->fresh()->load(['category', 'supplier']));
     }
 
-    // PERBAIKAN HAPUS: Mengubah parameter ke $id dan membuka proteksi stok agar tempe bisa dihapus
     public function destroy($id): JsonResponse
     {
         $item = Item::findOrFail($id);
         
-        // Catatan: Validasi stok sengaja gue bypass dulu biar lu bisa hapus si tempe buat testing
+        // Proteksi stok di-bypass dulu demi kelancaran testing hapus data
         $item->delete();
         return response()->json(['message' => 'Barang berhasil dihapus.']);
     }
