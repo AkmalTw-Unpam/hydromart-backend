@@ -11,7 +11,6 @@ class SupplierController extends Controller
     public function index(Request $request): JsonResponse
     {
         $q = Supplier::withCount('items')
-            // Mengelompokkan parameter OR agar tidak merusak filter is_active
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function ($sub) use ($request) {
                     $sub->where('name', 'like', "%{$request->search}%")
@@ -43,30 +42,25 @@ class SupplierController extends Controller
         return response()->json(Supplier::create($data), 201);
     }
 
-    public function show(Supplier $supplier): JsonResponse
-    {
-        return response()->json($supplier->load(['items:id,name,code,stock,unit']));
-    }
-
-    // PERBAIKAN UTAMA: Mengubah instance parameter agar mendukung mutasi POST murni
     public function update(Request $request, $id): JsonResponse
     {
         $supplier = Supplier::findOrFail($id);
 
+        // Menggunakan 'sometimes' supaya validasi tidak memblokir jika field tidak dikirim
         $data = $request->validate([
             'name'           => 'sometimes|string|max:255',
-            'contact_person' => 'nullable|string|max:100',
-            'phone'          => 'nullable|string|max:20',
-            'email'          => 'nullable|email|max:100',
-            'address'        => 'nullable|string',
-            'city'           => 'nullable|string|max:100',
+            'contact_person' => 'sometimes|nullable|string|max:100',
+            'phone'          => 'sometimes|nullable|string|max:20',
+            'email'          => 'sometimes|nullable|email|max:100',
+            'address'        => 'sometimes|nullable|string',
+            'city'           => 'sometimes|nullable|string|max:100',
             'is_active'      => 'sometimes', 
-            'notes'          => 'nullable|string',
+            'notes'          => 'sometimes|nullable|string',
         ]);
 
-        // Menangkap status is_active secara dinamis baik dari format string maupun boolean
+        // Konversi eksplisit untuk is_active
         if ($request->has('is_active')) {
-            $data['is_active'] = $request->boolean('is_active');
+            $data['is_active'] = filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN);
         }
 
         $supplier->update($data);
@@ -77,17 +71,16 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::findOrFail($id);
 
-        // KONTROL KEAMANAN: Tolak hapus jika supplier masih memiliki barang terikat di gudang
         if ($supplier->items()->exists()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Gagal menghapus! Supplier ini masih memiliki barang aktif yang terikat di gudang.'
+                'success' => false, 
+                'message' => 'Gagal! Supplier masih terikat dengan barang.'
             ], 422);
         }
 
         $supplier->delete();
         return response()->json([
-            'success' => true,
+            'success' => true, 
             'message' => 'Supplier berhasil dihapus.'
         ]);
     }
