@@ -19,7 +19,7 @@ class DashboardController extends Controller
             $totalItems      = Item::count() ?? 0;
             $inToday         = IncomingGood::whereDate('transaction_date', $today)->sum('quantity') ?? 0;
             $outToday        = OutgoingGood::whereDate('transaction_date', $today)->sum('quantity') ?? 0;
-            $$lowStockCount = Item::whereRaw('stock <= (min_stock * 5)')->count() ?? 0;
+            $lowStockCount   = Item::whereRaw('stock <= min_stock')->count() ?? 0;
             $totalStockValue = Item::sum(DB::raw('stock * price')) ?? 0;
 
             // Buat data chart 30 hari tiruan super ringan
