@@ -107,29 +107,5 @@ class ItemController extends Controller
         return response()->json(['message' => 'Barang berhasil dihapus.']);
     }
 
-    public function adjustStock(Request $request, $id): JsonResponse
-    {
-        $item = Item::findOrFail($id);
-        $data = $request->validate([
-            'stock'  => 'required|numeric|min:0',
-            'notes'  => 'required|string|max:500',
-        ]);
-
-        $oldStock = $item->stock;
-        $diff = $data['stock'] - $oldStock;
-
-        $item->update(['stock' => $data['stock']]);
-
-        StockMovement::create([
-            'item_id'      => $item->id,
-            'user_id'      => $request->user()->id,
-            'type'         => 'adjustment',
-            'quantity'     => abs($diff),
-            'stock_before' => $oldStock,
-            'stock_after'  => $data['stock'],
-            'notes'        => 'Penyesuaian stok: ' . $data['notes'],
-        ]);
-
-        return response()->json($item->fresh());
-    }
+    
 }
