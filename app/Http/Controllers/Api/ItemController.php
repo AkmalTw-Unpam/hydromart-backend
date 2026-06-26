@@ -76,13 +76,12 @@ class ItemController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $item = Item::findOrFail($id);
-
         $data = $request->validate([
             'name'        => 'sometimes|string|max:255',
             'category_id' => 'sometimes|exists:categories,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'unit'        => 'sometimes|string|max:20',
-            'stock'       => 'nullable|numeric|min:0', // PERBAIKAN: Stok sekarang diizinkan masuk dan di-update lewat form edit
+            'stock'       => 'nullable|numeric|min:0',
             'min_stock'   => 'nullable|numeric|min:0',
             'max_stock'   => 'nullable|numeric|min:0',
             'price'       => 'nullable|numeric|min:0',
@@ -103,17 +102,14 @@ class ItemController extends Controller
 
     public function destroy($id): JsonResponse
     {
-        $item = Item::findOrFail($id);
-        
-        // Proteksi stok di-bypass dulu demi kelancaran testing hapus data
-        $item->delete();
+        Item::findOrFail($id)->delete();
         return response()->json(['message' => 'Barang berhasil dihapus.']);
     }
 
-    public function adjust(Request $request, $id): JsonResponse
+    // INI METHOD YANG DIPANGGIL ROUTE adjustStock
+    public function adjustStock(Request $request, $id): JsonResponse
     {
         $item = Item::findOrFail($id);
-
         $data = $request->validate([
             'stock'  => 'required|numeric|min:0',
             'notes'  => 'required|string|max:500',
