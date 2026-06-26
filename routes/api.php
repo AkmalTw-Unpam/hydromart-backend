@@ -42,21 +42,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/items', [ItemController::class, 'store']);
     Route::get('/items/{id}', [ItemController::class, 'show']);
     Route::post('/items/{id}', [ItemController::class, 'update']);
-    Route::delete('/items/{id}', [ItemController::class, 'destroy']);
+    Route::post('/items/{id}/delete', [ItemController::class, 'destroy']);
     Route::post('/items/{id}/adjust', [ItemController::class, 'adjustStock']);
 
     // Categories
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::post('/categories/{id}', [CategoryController::class, 'update']);
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+    Route::post('/categories/{id}/delete', [CategoryController::class, 'destroy']);
 
-    // Suppliers (Sinkron dengan SupplierController@update yang menerima Request + ID)
+    // Suppliers
     Route::get('/suppliers', [SupplierController::class, 'index']);
     Route::post('/suppliers', [SupplierController::class, 'store']);
     Route::get('/suppliers/{id}', [SupplierController::class, 'show']);
-    Route::post('/suppliers/{id}', [SupplierController::class, 'update']); 
-    Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
+    Route::post('/suppliers/{id}', [SupplierController::class, 'update']);
+    Route::post('/suppliers/{id}/delete', [SupplierController::class, 'destroy']);
 
     // Transactions
     Route::get('/incoming', [TransactionController::class, 'incomingIndex']);
@@ -68,7 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::post('/notifications/read', [NotificationController::class, 'markRead']);
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
 
     // Reports
     Route::get('/reports/stock', [ReportController::class, 'stock']);
