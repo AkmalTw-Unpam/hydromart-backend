@@ -102,10 +102,47 @@ class ItemController extends Controller
     }
 
     public function destroy($id): JsonResponse
-    {
-        Item::findOrFail($id)->delete();
-        return response()->json(['message' => 'Barang berhasil dihapus.']);
-    }
+{
+    Item::findOrFail($id)->delete();
+    return response()->json(['message' => 'Barang berhasil dihapus.']);
+}
+
+public function adjustStock(Request $request, $id): JsonResponse
+{
+    $item = Item::findOrFail($id);
+
+    $data = $request->validate([
+        'stock' => 'required|numeric|min:0',
+        'notes' => 'nullable|string|max:500',
+    ]);
+
+    $oldStock = $item->stock;
+    $newStock = $data['stock'];
+    $diff = $newStock - $oldStock;
+
+    $item->update([
+        'stock' => $newStock
+    ]);
+
+    StockMovement::create([
+        'item_id'      => $item->id,
+        'user_id'      => $request->user()->id,
+        'type'         => 'adjustment',
+        'quantity'     => abs($diff),
+        'stock_before' => $oldStock,
+        'stock_after'  => $newStock,
+        'notes'        => !empty($data['notes'])
+            ? 'Penyesuaian stok: ' . $data['notes']
+            : 'Penyesuaian stok',
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Stok berhasil disesuaikan',
+        'data'    => $item->fresh()
+    ]);
+}
+
 
     
 }
