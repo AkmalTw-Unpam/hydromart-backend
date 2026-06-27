@@ -58,14 +58,37 @@ return response()->json([
                 'total_stock_value'=> (float) $totalStockValue,
                 
                 // Array pendukung agar tidak undefined
-                'chart_data'       => $chartData,
-                'chartData'        => $chartData,
-                'top_items'        => [],
-                'topItems'         => [],
-                'low_stock_items'  => [],
-                'lowStockItems'    => [],
-                'recent_movements' => [],
-                'recentMovements'  => [],
+'top_items' => Item::select('id','name','code','stock')
+    ->limit(5)
+    ->get(),
+
+'topItems' => Item::select('id','name','code','stock')
+    ->limit(5)
+    ->get(),
+
+'low_stock_items' => Item::whereColumn('stock', '<=', 'min_stock')
+    ->select('id','name','code','stock','min_stock','unit')
+    ->get(),
+
+'lowStockItems' => Item::whereColumn('stock', '<=', 'min_stock')
+    ->select('id','name','code','stock','min_stock','unit')
+    ->get(),
+
+'recent_movements' => StockMovement::with([
+        'item:id,name,unit',
+        'user:id,name'
+    ])
+    ->latest()
+    ->limit(10)
+    ->get(),
+
+'recentMovements' => StockMovement::with([
+        'item:id,name,unit',
+        'user:id,name'
+    ])
+    ->latest()
+    ->limit(10)
+    ->get(),
             ]);
 
         } catch (\Throwable $e) {
