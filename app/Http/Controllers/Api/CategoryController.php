@@ -34,7 +34,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
             'is_active'   => 'sometimes|boolean',
         ]);
-        $category->update($data);
+        $category->forceDelete();
         return response()->json($category->fresh());
     }
 
