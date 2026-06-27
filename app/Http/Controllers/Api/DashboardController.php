@@ -34,15 +34,16 @@ class DashboardController extends Controller
             }
 
             // PERBAIKAN STRUKTUR DATA: Mengembalikan format flat & stats sekaligus demi keamanan React
-            return response()->json([
-                // Format Objek Stats Bawaan Anda
-                'stats' => [
-                    'total_items'       => (int) $totalItems,
-                    'in_today'          => (float) $inToday,
-                    'out_today'         => (float) $outToday,
-                    'low_stock_count'   => (int) $lowStockCount,
-                    'total_stock_value' => (float) $totalStockValue,
-                ],
+return response()->json([
+    'debug_total_items' => Item::count(),
+
+    'stats' => [
+        'total_items'       => (int) $totalItems,
+        'in_today'          => (float) $inToday,
+        'out_today'         => (float) $outToday,
+        'low_stock_count'   => (int) $lowStockCount,
+        'total_stock_value' => (float) $totalStockValue,
+    ],
                 
                 // Format Tingkat Pertama (Flat) - Sering dicari oleh React Destructuring
                 'totalItems'       => (int) $totalItems,
