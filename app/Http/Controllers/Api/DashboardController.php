@@ -35,7 +35,6 @@ class DashboardController extends Controller
 
             // PERBAIKAN STRUKTUR DATA: Mengembalikan format flat & stats sekaligus demi keamanan React
 return response()->json([
-    'debug_total_items' => Item::count(),
 
     'stats' => [
         'total_items'       => (int) $totalItems,
@@ -56,6 +55,9 @@ return response()->json([
                 'low_stock_count'  => (int) $lowStockCount,
                 'totalStockValue'  => (float) $totalStockValue,
                 'total_stock_value'=> (float) $totalStockValue,
+
+                'chart_data' => $chartData,
+                'chartData'  => $chartData,
                 
                 // Array pendukung agar tidak undefined
 'top_items' => Item::select('id','name','code','stock')
