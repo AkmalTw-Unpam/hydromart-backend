@@ -23,15 +23,27 @@ class DashboardController extends Controller
             $totalStockValue = Item::sum(DB::raw('stock * price')) ?? 0;
 
             // Buat data chart 30 hari tiruan super ringan
-            $chartData = [];
-            for ($i = 29; $i >= 0; $i--) {
-                $date = Carbon::today()->subDays($i);
-                $chartData[] = [
-                    'date'     => $date->format('d M'),
-                    'incoming' => 0,
-                    'outgoing' => 0,
-                ];
-            }
+$chartData = [];
+
+for ($i = 29; $i >= 0; $i--) {
+    $date = Carbon::today()->subDays($i);
+
+    $incoming = IncomingGood::whereDate(
+        'transaction_date',
+        $date
+    )->sum('quantity');
+
+    $outgoing = OutgoingGood::whereDate(
+        'transaction_date',
+        $date
+    )->sum('quantity');
+
+    $chartData[] = [
+        'date'     => $date->format('d M'),
+        'incoming' => (float) $incoming,
+        'outgoing' => (float) $outgoing,
+    ];
+}
 
             // PERBAIKAN STRUKTUR DATA: Mengembalikan format flat & stats sekaligus demi keamanan React
 return response()->json([
