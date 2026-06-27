@@ -80,22 +80,24 @@ return response()->json([
                 
                 // Array pendukung agar tidak undefined
 'top_items' => Item::select(
-        'id',
-        'name',
-        'code',
-        DB::raw('stock as total_out')
-    )
-    ->limit(5)
-    ->get(),
+    'id',
+    'name',
+    'code',
+    DB::raw('stock as total_out')
+)
+->orderByDesc('stock')
+->limit(5)
+->get(),
 
 'topItems' => Item::select(
-        'id',
-        'name',
-        'code',
-        DB::raw('stock as total_out')
-    )
-    ->limit(5)
-    ->get(),
+    'id',
+    'name',
+    'code',
+    DB::raw('stock as total_out')
+)
+->orderByDesc('stock')
+->limit(5)
+->get(),
 
 'low_stock_items' => Item::whereColumn('stock', '<=', 'min_stock')
     ->select('id','name','code','stock','min_stock','unit')
