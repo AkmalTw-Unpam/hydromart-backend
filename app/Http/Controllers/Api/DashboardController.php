@@ -60,11 +60,21 @@ return response()->json([
                 'chartData'  => $chartData,
                 
                 // Array pendukung agar tidak undefined
-'top_items' => Item::select('id','name','code','stock')
+'top_items' => Item::select(
+        'id',
+        'name',
+        'code',
+        DB::raw('stock as total_out')
+    )
     ->limit(5)
     ->get(),
 
-'topItems' => Item::select('id','name','code','stock')
+'topItems' => Item::select(
+        'id',
+        'name',
+        'code',
+        DB::raw('stock as total_out')
+    )
     ->limit(5)
     ->get(),
 
