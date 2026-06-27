@@ -17,8 +17,8 @@ class DashboardController extends Controller
             
             // Query basic dengan fallback nilai 0 jika kosong
             $totalItems      = Item::count() ?? 0;
-            $inToday         = IncomingGood::whereDate('transaction_date', $today)->sum('quantity') ?? 0;
-            $outToday        = OutgoingGood::whereDate('transaction_date', $today)->sum('quantity') ?? 0;
+            $inToday         = IncomingGood::sum('quantity') ?? 0;
+            $outToday        = OutgoingGood::sum('quantity') ?? 0;
             $lowStockCount   = Item::whereRaw('stock <= min_stock')->count() ?? 0;
             $totalStockValue = Item::sum(DB::raw('stock * price')) ?? 0;
 
